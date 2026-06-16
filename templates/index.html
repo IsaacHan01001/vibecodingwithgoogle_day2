@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track the latest Google Cloud BigQuery release notes in a clean, modern dashboard. Filter features, issues, and updates, and instantly draft and share them on X.">
+    <title>BigQuery Release Insights | Track and Share GCP Updates</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-main">
+                <div class="brand">
+                    <!-- SVG Logo: Google Cloud/BigQuery Inspired -->
+                    <div class="logo-container">
+                        <svg class="app-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#grad-blue)" />
+                            <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="url(#grad-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <defs>
+                                <linearGradient id="grad-blue" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#4285F4" />
+                                    <stop offset="50%" stop-color="#06b6d4" />
+                                    <stop offset="100%" stop-color="#34A853" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <span class="badge-tag">GCP Feed Reader</span>
+                        <h1>BigQuery Release Insights</h1>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="last-updated-container">
+                        <span class="dot-indicator pulse" id="sync-status"></span>
+                        <span class="last-updated-text" id="last-updated-text">Checking for updates...</span>
+                    </div>
+                    <button class="btn btn-primary btn-refresh" id="refresh-btn" aria-label="Refresh release notes">
+                        <svg class="icon icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                        <span class="refresh-label">Refresh</span>
+                    </button>
+                </div>
+            </div>
+            <p class="app-subtitle">Stay ahead with real-time, curated, and searchable release notes for Google Cloud BigQuery. Select any update to draft and post a tweet instantly.</p>
+        </header>
+
+        <!-- Stats Overview Row -->
+        <section class="stats-overview" aria-label="Release Metrics">
+            <div class="stat-card" id="stat-total">
+                <div class="stat-icon-wrapper" style="--bg-glow: rgba(66, 133, 244, 0.15); --color: #4285F4;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-value" id="count-total">-</span>
+                    <span class="stat-label">Total Updates</span>
+                </div>
+            </div>
+            
+            <div class="stat-card" id="stat-features">
+                <div class="stat-icon-wrapper" style="--bg-glow: rgba(6, 182, 212, 0.15); --color: #06b6d4;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-value" id="count-features">-</span>
+                    <span class="stat-label">New Features</span>
+                </div>
+            </div>
+
+            <div class="stat-card" id="stat-issues">
+                <div class="stat-icon-wrapper" style="--bg-glow: rgba(234, 67, 53, 0.15); --color: #EA4335;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-value" id="count-issues">-</span>
+                    <span class="stat-label">Issues & Fixes</span>
+                </div>
+            </div>
+
+            <div class="stat-card" id="stat-other">
+                <div class="stat-icon-wrapper" style="--bg-glow: rgba(251, 188, 5, 0.15); --color: #FBBC05;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+                <div class="stat-details">
+                    <span class="stat-value" id="count-other">-</span>
+                    <span class="stat-label">Other Changes</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search and Filters Section -->
+        <nav class="search-filters-bar" aria-label="Filter release notes">
+            <div class="search-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="search-input" placeholder="Search update keyword, date or contents..." aria-label="Search release notes">
+                <button class="clear-search-btn" id="clear-search-btn" style="display: none;" aria-label="Clear search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div class="filter-controls">
+                <div class="category-filters" id="category-filters">
+                    <button class="filter-pill active" data-category="all">All</button>
+                    <button class="filter-pill" data-category="feature">Features</button>
+                    <button class="filter-pill" data-category="issue">Issues</button>
+                    <button class="filter-pill" data-category="changed">Changes</button>
+                    <button class="filter-pill" data-category="fixed">Fixes</button>
+                    <button class="filter-pill" data-category="other">Other</button>
+                </div>
+                
+                <div class="sort-wrapper">
+                    <label for="sort-select" class="sort-label">Sort:</label>
+                    <select id="sort-select" aria-label="Sort order">
+                        <option value="newest" selected>Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content (Timeline of Updates) -->
+        <main class="feed-main">
+            <!-- Feed Container -->
+            <div class="feed-container" id="feed-container">
+                <!-- Skeleton Loader (Initially Visible) -->
+                <div class="skeleton-container" id="skeleton-loader">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 BigQuery Release Insights. Powered by GCP Atom Feed &amp; Flask. Built with premium design aesthetics.</p>
+        </footer>
+    </div>
+
+    <!-- Tweet Composer Modal -->
+    <div class="modal-overlay" id="tweet-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
+        <div class="modal-card">
+            
+            <header class="modal-header">
+                <h2 id="modal-title">Draft Release Tweet</h2>
+                <button class="modal-close-btn" id="modal-close-btn" aria-label="Close modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </header>
+            
+            <div class="modal-body">
+                
+                <!-- Step 1: Select Draft Template Style -->
+                <div class="modal-section">
+                    <label class="modal-section-title">1. Choose a Tweet Style</label>
+                    <div class="template-selector" id="template-selector">
+                        <button class="template-pill active" data-style="hype">🚀 Tech Hype</button>
+                        <button class="template-pill" data-style="news">💼 Professional</button>
+                        <button class="template-pill" data-style="short">📝 Short &amp; Sweet</button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Edit Tweet Area -->
+                <div class="modal-section">
+                    <div class="textarea-header">
+                        <label for="tweet-textarea" class="modal-section-title">2. Refine Your Tweet Text</label>
+                        <div class="char-count-wrapper">
+                            <span class="char-count-text" id="char-count-number">0 / 280</span>
+                            <div class="char-count-progress-bg">
+                                <div class="char-count-progress-bar" id="char-count-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="textarea-container">
+                        <textarea id="tweet-textarea" rows="5" maxlength="500" placeholder="What's happening?"></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 3: Simulated Live X Preview -->
+                <div class="modal-section">
+                    <label class="modal-section-title">Preview on X (Twitter)</label>
+                    <article class="x-preview-card">
+                        <div class="x-preview-header">
+                            <div class="x-avatar">
+                                <!-- Simulated avatar: BigQuery logo -->
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm3-5c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3z"/>
+                                </svg>
+                            </div>
+                            <div class="x-user-info">
+                                <div class="x-name-row">
+                                    <span class="x-display-name">Cloud Architect</span>
+                                    <!-- Verified Badge -->
+                                    <svg class="x-verified" viewBox="0 0 24 24" fill="#1d9bf0">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                    <span class="x-username">@gcp_tracker</span>
+                                </div>
+                                <span class="x-time">Just now</span>
+                            </div>
+                            <div class="x-logo-icon">
+                                <!-- X Logo SVG -->
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="x-preview-body">
+                            <p class="x-tweet-content" id="x-tweet-content">Loading preview...</p>
+                        </div>
+                        <div class="x-preview-footer">
+                            <span class="x-footer-icon" title="Reply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 0</span>
+                            <span class="x-footer-icon" title="Repost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg> 0</span>
+                            <span class="x-footer-icon" title="Like"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> 0</span>
+                            <span class="x-footer-icon" title="Views"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 0</span>
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+            
+            <footer class="modal-footer">
+                <button class="btn btn-secondary" id="btn-copy-tweet">
+                    <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="copy-btn-text">Copy Draft</span>
+                </button>
+                <div class="modal-footer-actions">
+                    <button class="btn btn-outline" id="btn-tweet-cancel">Cancel</button>
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" id="btn-tweet-share">
+                        <!-- X Icon -->
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" style="margin-right: 8px;">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                        </svg>
+                        Post on X
+                    </a>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
